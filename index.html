@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Aron Moments</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
+html,body{height:100%;overflow:hidden;background:#FFF6F6}
+#loader1{position:fixed;inset:0;background:#fff;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#loader1 h1{font-size:28px;font-weight:800;color:#111}
+.spinner{width:44px;height:44px;border-radius:50%;border:5px solid transparent;border-top:5px solid #a33;border-right:5px solid #a33;margin-top:14px;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loader2{position:fixed;inset:0;background:#fff;z-index:998;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+#loader2 h1{font-size:26px;font-weight:800;color:#111}
+#loader2 .sub{font-size:16px;color:#777;margin-top:12px}
+.bar-wrap{width:100%;max-width:320px;height:8px;background:#e8e8e8;border-radius:10px;margin-top:18px;overflow:hidden}
+#barFill{height:100%;width:0%;background:#c81e2b}
+#percent{font-size:18px;font-weight:700;margin-top:12px}
+#syncText{font-size:15px;color:#888;margin-top:12px}
+#noNet{display:none;margin-top:12px;background:#fff1f1;border:1px solid #ffb3b3;color:#c81e2b;padding:10px;border-radius:12px;font-size:13px}
+#loginPage{display:none;width:100%;max-width:360px;height:100dvh;margin:0 auto;background:#fff;padding:14px 20px 16px;flex-direction:column;overflow:hidden}
+.login-lang{align-self:flex-end;background:#FFE9EB;border-radius:10px;padding:4px;display:flex;gap:2px}
+.login-lang span{padding:6px 14px;border-radius:8px;font-size:15px;font-weight:700;color:#888;cursor:pointer}
+.login-lang span.on{background:#fff;color:#C81E2B}
+.login-title{font-size:30px;font-weight:800;color:#111;line-height:1.15;margin-top:28px}
+.login-label{font-size:16px;font-weight:700;color:#111;margin:22px 0 8px}
+.login-input{width:100%;padding:14px 14px;border:1px solid #eee;border-radius:12px;font-size:16px;outline:none;color:#111}
+.login-input::placeholder{color:#B5B5B5}
+.pass-wrap{position:relative}
+.pass-wrap input{padding-right:44px}
+.eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;color:#aaa}
+.login-row{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+.remember{display:flex;align-items:center;gap:8px;font-size:15px;color:#777;cursor:pointer}
+.remember .box{width:22px;height:22px;background:#8A4A3A;border-radius:5px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800}
+.forgot{color:#2A6BFF;font-size:15px;font-weight:600;cursor:pointer}
+.sign-btn{margin-top:20px;width:100%;padding:14px;background:#C81E2B;color:#fff;border:none;border-radius:12px;font-size:19px;font-weight:700;cursor:pointer;box-shadow:0 4px 10px rgba(200,30,43,.25)}
+.login-err{display:none;margin-top:12px;background:#FFF0F0;border:1px solid #FFB3B3;color:#C81E2B;padding:10px;border-radius:10px;font-size:13px;text-align:center}
+.login-footer{margin-top:auto;text-align:center;line-height:1.6}
+.login-footer b{font-size:17px;color:#111}
+.login-footer .green{font-size:15px;font-weight:700;color:#0A8A4A}
+.login-footer .gold{font-size:15px;font-weight:700;color:#B98A00}
+.login-footer .dev{font-size:13px;color:#888;margin-top:8px}
+.login-footer .dev b{font-size:13px;color:#111}
+#resetPage{display:none;width:100%;max-width:360px;height:100dvh;margin:0 auto;background:#fff;padding:16px 20px;flex-direction:column;overflow-y:auto}
+.reset-img{text-align:center;margin:70px 0 10px}
+.reset-title{font-size:28px;font-weight:800;color:#111;letter-spacing:-0.2px}
+.reset-sub{font-size:17px;color:#888;line-height:1.5;margin-top:14px}
+.reset-label{font-size:16px;font-weight:700;color:#111;margin:26px 0 10px}
+.reset-input{width:100%;padding:18px 16px;border:1px solid #EDEDED;border-radius:14px;font-size:17px;outline:none;color:#111}
+.reset-input::placeholder{color:#B5B5B5}
+.reset-btn{margin-top:38px;width:100%;padding:17px;background:#C1272D;color:#fff;border:none;border-radius:13px;font-size:20px;font-weight:700;cursor:pointer}
+.reset-err{display:none;margin-top:12px;background:#FFF0F0;border:1px solid #FFB3B3;color:#C81E2B;padding:10px;border-radius:10px;font-size:13px;text-align:center}
+.reset-ok{display:none;margin-top:12px;background:#F0FFF4;border:1px solid #9FE2B0;color:#0A8A4A;padding:10px;border-radius:10px;font-size:13px;text-align:center}
+#stockPage{display:none;background:#FFF6F6;max-width:360px;margin:0 auto;height:100dvh;flex-direction:column;overflow:hidden}
+.stock-top{background:#C1272D;color:#fff;display:flex;justify-content:space-between;align-items:center;padding:18px 16px}
+.stock-top .back{font-size:28px;cursor:pointer}
+.stock-top h2{font-size:24px;font-weight:700}
+.stock-top .ref{font-size:26px;cursor:pointer}
+.stock-body{padding:16px 14px;flex:1;overflow-y:auto}
+.stock-cards{display:flex;gap:12px}
+.stock-card{flex:1;background:#fff;border-radius:16px;padding:16px 14px;min-height:130px}
+.stock-card.green{border:1px solid #2E9E5B}
+.stock-card.blue{border:1px solid #2A6BFF}
+.stock-card .s-ic{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.stock-card.green .s-ic{background:#E8F8EF;color:#2E9E5B}
+.stock-card.blue .s-ic{background:#EAF0FF;color:#2A6BFF}
+.stock-card b{display:block;font-size:38px;font-weight:800;margin-top:16px}
+.stock-card.green b{color:#2E9E5B}
+.stock-card.blue b{color:#2A6BFF}
+.stock-card span{display:block;font-size:18px;margin-top:6px}
+.stock-card.green span{color:#2E9E5B}
+.stock-card.blue span{color:#2A6BFF}
+.stock-tabs{display:flex;margin-top:22px;border-bottom:1px solid #E8D5D8}
+.stock-tab{flex:1;text-align:center;padding:10px 4px;font-size:19px;font-weight:600;color:#888;cursor:pointer;position:relative}
+.stock-tab.on{color:#C1272D;font-weight:800}
+.stock-tab.on::after{content:"";position:absolute;left:12%;right:12%;bottom:-1px;height:5px;background:#C1272D;border-radius:10px}
+.stock-table{margin-top:14px;border:1px solid #E8B4BC;border-radius:14px;overflow:hidden;background:#fff}
+.stock-table-head{display:flex;background:#FDECEF;padding:14px 10px}
+.stock-table-head div{font-size:17px;font-weight:800;color:#C1272D}
+.stock-table-row{display:flex;padding:16px 10px;align-items:flex-start}
+.stock-table-row div{font-size:17px;color:#111;line-height:1.3}
+.stock-bottom{display:flex;gap:10px;padding:12px 14px 16px}
+.stock-bottom button{flex:1;padding:16px;border:none;border-radius:14px;font-size:19px;font-weight:700;cursor:pointer}
+.stock-bottom .collect{background:#A8D5B5;color:#fff}
+.stock-bottom .return{background:#0B5CFF;color:#fff}
+#dailyPage{display:none;background:#F8F8F8;max-width:360px;margin:0 auto;height:100dvh;flex-direction:column;overflow:hidden}
+.daily-top{background:#C1272D;color:#fff;text-align:center;padding:22px 16px 20px}
+.daily-top h2{font-size:25px;font-weight:700;letter-spacing:-0.2px}
+.daily-body{padding:16px 14px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.daily-item{background:#fff;border:1px solid #EDEDED;border-radius:16px;padding:19px 16px;display:flex;align-items:center;gap:14px;cursor:pointer}
+.daily-item .d-ic{width:32px;min-width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.daily-item .d-ic svg{width:30px;height:30px;stroke:#111;stroke-width:1.4;fill:none}
+.daily-item b{flex:1;font-size:20px;font-weight:600;color:#111;letter-spacing:-0.1px;line-height:1.2}
+.daily-item .d-btn{width:38px;height:38px;min-width:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:400;color:#fff}
+.daily-item .d-btn.done{background:#1DB954}
+.daily-item .d-btn.next{background:#C1272D}
+.daily-bottom{margin:8px 12px 12px;background:linear-gradient(180deg,#E61E2B,#C81E2B);border-radius:20px;padding:6px;display:flex;align-items:center;box-shadow:0 8px 18px rgba(200,30,43,.3);border:1.2px solid #FF6B6B;flex-shrink:0}
+#home{display:none;width:100%;max-width:360px;height:100dvh;margin:0 auto;background:#FFF6F6;flex-direction:column;overflow:hidden}
+.main{padding:10px 12px 10px;display:flex;flex-direction:column;flex:1;overflow:hidden}
+.top{display:flex;align-items:flex-start;gap:8px;flex-shrink:0}
+.avatar{width:50px;height:50px;min-width:50px;border-radius:50%;background:#FFE2E5;border:1px solid #FFCBD1;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#7A0F1A}
+.info{flex:1;min-width:0}
+.info h1{font-size:15px;font-weight:800;color:#111;white-space:nowrap}
+.id-row{display:flex;align-items:center;gap:5px;margin-top:3px;white-space:nowrap}
+.id-row b{font-size:14px;font-weight:800;color:#D81E2B}
+.maxim{border:1.2px solid #D81E2B;color:#D81E2B;border-radius:20px;padding:0 6px;font-size:11px;font-weight:700;line-height:1.5}
+.date-row,.loc-row{display:flex;align-items:center;gap:5px;margin-top:4px;font-size:13px;color:#222;white-space:nowrap}
+.date-row svg,.loc-row svg{width:15px;height:15px;flex-shrink:0}
+.top-icons{display:flex;gap:6px;flex-shrink:0}
+.icon-btn{width:38px;height:38px;background:#fff;border:1px solid #FFE6E8;border-radius:9px;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
+.icon-btn svg{width:22px;height:22px}
+.badge{position:absolute;top:-6px;right:-6px;background:#F44336;color:#fff;width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.red-card{margin-top:10px;background:linear-gradient(135deg,#FF3B46 0%,#C81E2B 55%,#7A0F1A 100%);border-radius:18px;padding:14px;color:#fff;flex-shrink:0}
+.red-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.red-head h2{font-size:15px;font-weight:700;white-space:nowrap}
+.red-body{display:flex;margin-top:11px}
+.red-col{flex:1}
+.red-col+.red-col{border-left:1px solid rgba(255,255,255,.4);padding-left:12px}
+.red-col small{font-size:12px;opacity:.95;white-space:nowrap}
+.red-col b{font-size:21px;display:block;margin-top:2px}
+.mini-bar{height:5px;background:rgba(255,255,255,.25);border-radius:10px;margin-top:7px;overflow:hidden}
+.mini-fill{height:100%;background:#FFB02E;width:0%}
+.chart-box{width:38px;height:32px;background:#6E0A14;border-radius:8px;display:flex;align-items:flex-end;justify-content:center;gap:3px;padding:6px;flex-shrink:0;cursor:pointer}
+.chart-box i{display:block;width:4px;background:#fff;border-radius:2px}
+.chart-box i:nth-child(1){height:7px}.chart-box i:nth-child(2){height:12px}.chart-box i:nth-child(3){height:16px}
+.act-title{font-size:18px;font-weight:800;color:#111;margin:11px 0 8px;flex-shrink:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;align-content:start}
+.card{background:#fff;border:1px solid #E6E6E6;border-radius:10px;padding:11px 9px;display:flex;gap:8px;align-items:center;cursor:pointer;min-height:56px}
+.card .ic{width:30px;min-width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card .ic svg{width:30px;height:30px}
+.card b{font-size:13px;line-height:1.25;color:#111}
+.bottom{margin:8px 12px 10px;background:linear-gradient(180deg,#E61E2B,#C81E2B);border-radius:20px;padding:6px;display:flex;align-items:center;box-shadow:0 8px 18px rgba(200,30,43,.3);border:1.2px solid #FF6B6B;flex-shrink:0}
+.nav-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px;border-radius:14px;cursor:pointer;color:#fff;font-size:14px;font-weight:800}
+.nav-btn svg{width:20px;height:20px;fill:#fff}
+.nav-btn.active{flex:1.6;background:#fff;color:#C81E2B}
+.nav-btn.active svg{fill:#C81E2B}
+.inner-page{display:none;background:#FFF6F6;max-width:360px;margin:0 auto;height:100dvh;overflow-y:auto;padding-bottom:100px}
+.profile-wrap{padding:14px 14px 0}
+.profile-title{text-align:center;font-size:20px;font-weight:800;color:#111}
+.profile-avatar{width:110px;height:110px;border-radius:50%;background:#FFD9DC;border:1.5px solid #FFBFC6;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:800;color:#7A0F1A;margin:16px auto 12px}
+.profile-name{text-align:center;font-size:21px;font-weight:800;color:#111;line-height:1.2}
+.profile-maxim{text-align:center;margin-top:8px}
+.profile-maxim span{color:#C81E2B;background:#FFF0F1;border:1px solid #FFE2E5;border-radius:12px;padding:2px 10px;font-size:13px;font-weight:700}
+.sec-title{font-size:19px;font-weight:800;color:#111;margin:20px 0 10px}
+.info-card,.action-card{background:#fff;border:1px solid #FFDDE0;border-radius:14px;overflow:hidden}
+.info-row{display:flex;gap:12px;padding:14px 14px;align-items:flex-start}
+.info-row+.info-row{border-top:1px solid #F0E0E0}
+.info-row .p-ic{width:28px;min-width:28px;text-align:center}
+.info-row .p-ic svg{width:26px;height:26px}
+.info-row label{font-size:14px;font-weight:700;color:#C81E2B;display:block}
+.info-row b{font-size:18px;font-weight:700;color:#111;display:block;margin-top:2px}
+.action-row{display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer}
+.action-row+.action-row{border-top:1px solid #F0E0E0}
+.action-row .a-ic{width:40px;height:40px;min-width:40px;background:#FFE9EB;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.action-row .a-ic svg{width:22px;height:22px}
+.action-row b{font-size:16px;color:#111;flex:1}
+.action-row .arrow{color:#999;font-size:20px}
+.action-row .logout{color:#C81E2B}
+.lang-toggle{display:flex;background:#FFE9EB;border-radius:10px;padding:3px;gap:2px}
+.lang-toggle span{padding:5px 12px;border-radius:8px;font-size:14px;font-weight:700;color:#666;cursor:pointer}
+.lang-toggle span.on{background:#fff;color:#C81E2B;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.footer{text-align:center;margin:20px 0 6px;line-height:1.6}
+.footer b{font-size:16px;color:#111}
+.footer .green{font-size:15px;font-weight:700;color:#0A8A4A}
+.footer .gold{font-size:15px;font-weight:700;color:#B98A00}
+.footer .dev{font-size:13px;color:#888;margin-top:6px}
+.footer .dev b{font-size:13px;color:#111}
+.list-item{background:#fff;border:1px solid #eee;border-radius:12px;padding:12px;margin-top:8px;display:flex;justify-content:space-between;align-items:center}
+.add-btn{position:fixed;bottom:90px;right:16px;width:48px;height:48px;background:#c81e2b;color:#fff;border:none;border-radius:50%;font-size:24px;z-index:60}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;padding:20px}
+.modal-box{background:#fff;width:100%;max-width:320px;border-radius:16px;padding:18px}
+.modal-box input,.modal-box select{width:100%;padding:10px;margin-top:8px;border:1px solid #ddd;border-radius:10px}
+.modal-box button{width:100%;padding:10px;background:#c81e2b;color:#fff;border:none;border-radius:10px;margin-top:8px;font-weight:700}
+#logoutModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;align-items:center;justify-content:center;padding:20px}
+.logout-box{background:#FFF1F1;width:100%;max-width:330px;border-radius:28px;padding:26px 24px 22px;box-shadow:0 10px 30px rgba(0,0,0,.15)}
+.logout-box h2{font-size:30px;font-weight:400;color:#111}
+.logout-box p{font-size:20px;line-height:1.4;color:#111;margin-top:18px}
+.logout-btns{display:flex;justify-content:flex-end;gap:28px;margin-top:28px}
+.logout-btns button{border:none;background:none;font-size:20px;cursor:pointer;padding:6px 4px}
+.logout-btns .cancel{color:#9A5A4A}
+.logout-btns .yes{color:#FF3B30;font-weight:500}
+</style>
+</head>
+<body>
+
+<div id="loader1"><h1>Aron Moments</h1><div class="spinner"></div></div>
+<div id="loader2"><h1>Aron Moments</h1><div class="sub">Preparing your workspace</div><div class="bar-wrap"><div id="barFill"></div></div><div id="percent">0%</div><div id="syncText">Syncing assigned retailers...</div><div id="noNet">⚠️ No Internet!<br><button onclick="retryLoad()" style="margin-top:8px;padding:8px 14px;background:#c81e2b;color:#fff;border:none;border-radius:8px">🔄 Retry</button></div></div>
+
+<div id="loginPage">
+  <div class="login-lang"><span id="lBn" onclick="setLangAll('bn')">বাং</span><span id="lEn" class="on" onclick="setLangAll('en')">Eng</span></div>
+  <div class="login-title" data-i18n="signin_title">Sign in to your<br>account</div>
+  <div class="login-label" data-i18n="username">Username</div>
+  <input class="login-input" id="loginUser" placeholder="Enter your Username" data-i18n-ph="username_ph" autocomplete="off">
+  <div class="login-label" data-i18n="password">Password</div>
+  <div class="pass-wrap"><input class="login-input" id="loginPass" type="password" placeholder="Enter your password" data-i18n-ph="password_ph"><span class="eye" onclick="togglePass()">👁️</span></div>
+  <div class="login-row"><label class="remember"><span class="box" id="rememberBox" onclick="toggleRemember()">✓</span> <span data-i18n="remember">Remember Me</span></label><span class="forgot" data-i18n="forgot" onclick="openReset()">Forgot Password?</span></div>
+  <button class="sign-btn" data-i18n="signin" onclick="doLogin()">Sign In</button>
+  <div class="login-err" id="loginErr" data-i18n="login_err">❌ Wrong Username / Password!</div>
+  <div class="login-footer"><b>Aron Moments</b><br><span class="green">v1.0.17 - Theseus AI Lab</span><br><span class="gold">armeabi-v7a</span><div class="dev"><span data-i18n="device">Device ID</span> - <b>8c9404752500833f</b></div></div>
+</div>
+
+<div id="resetPage">
+  <div class="reset-img">
+    <svg width="250" height="230" viewBox="0 0 250 230" fill="none">
+      <circle cx="135" cy="115" r="105" fill="#FDECEF"/>
+      <path d="M185 95 H225 V145 H185" stroke="#E8B4BC" stroke-width="1.5" stroke-dasharray="3 4" fill="none"/>
+      <circle cx="225" cy="95" r="3" fill="#C1272D"/>
+      <path d="M35 170 C55 150 90 145 115 150 L175 162 C195 166 205 175 195 185 C185 195 160 198 135 195 L85 188 C60 185 45 182 35 170 Z" fill="#fff" stroke="#E8B4BC" stroke-width="1.2"/>
+      <path d="M55 155 C70 145 95 142 115 148" stroke="#E8B4BC" stroke-width="1" fill="none"/>
+      <path d="M95 78 C95 55 110 42 135 42 C160 42 175 55 175 78 L175 88 L95 88 Z" stroke="#C1272D" stroke-width="12" fill="none"/>
+      <rect x="85" y="88" width="100" height="78" rx="10" fill="#C1272D"/>
+      <path d="M135 115 a10 10 0 1 1 0.01 0" fill="#fff"/>
+      <path d="M130 128 L140 128 L143 148 L127 148 Z" fill="#fff"/>
+      <g><rect x="12" y="92" width="92" height="38" rx="19" fill="#fff" stroke="#E8D5D8" stroke-width="1"/><text x="25" y="119" font-family="Arial" font-size="28" font-weight="800" fill="#C1272D">***</text></g>
+    </svg>
+  </div>
+  <div class="reset-title" data-i18n="reset_title">Reset Your Password</div>
+  <div class="reset-sub" data-i18n="reset_sub">We will send a password reset link to your phone number</div>
+  <div id="step1">
+    <div class="reset-label" data-i18n="username">Username</div>
+    <input class="reset-input" id="resetUser" placeholder="Enter your Username" data-i18n-ph="username_ph">
+    <div class="reset-err" id="resetErr1"></div>
+    <button class="reset-btn" data-i18n="send_code" onclick="sendResetCode()">Send Reset Code</button>
+  </div>
+  <div id="step2" style="display:none">
+    <div class="reset-label" data-i18n="phone">Phone Number</div>
+    <input class="reset-input" id="resetPhone" placeholder="Enter your Phone Number" data-i18n-ph="phone_ph" inputmode="numeric">
+    <div class="reset-sub" style="font-size:14px;margin-top:10px" id="resetPhoneHint"></div>
+    <div class="reset-err" id="resetErr2"></div>
+    <button class="reset-btn" data-i18n="verify" onclick="verifyPhone()">Verify Phone Number</button>
+  </div>
+  <div id="step3" style="display:none">
+    <div class="reset-label" data-i18n="new_pass">New Password</div>
+    <div style="position:relative"><input class="reset-input" id="newPass" type="password" placeholder="Enter new password" data-i18n-ph="new_pass_ph" style="padding-right:44px"><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px" onclick="toggleNewPass('newPass')">👁️</span></div>
+    <div class="reset-label" data-i18n="confirm_pass">Confirm Password</div>
+    <div style="position:relative"><input class="reset-input" id="confirmPass" type="password" placeholder="Confirm new password" data-i18n-ph="confirm_pass_ph" style="padding-right:44px"><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px" onclick="toggleNewPass('confirmPass')">👁️</span></div>
+    <div class="reset-err" id="resetErr3"></div>
+    <div class="reset-ok" id="resetOk"></div>
+    <button class="reset-btn" data-i18n="save_pass" onclick="saveNewPass()">Save New Password</button>
+  </div>
+  <div style="text-align:center;margin-top:18px"><span style="color:#2A6BFF;cursor:pointer;font-size:15px" data-i18n="back_login" onclick="backToLogin()">← Back to Login</span></div>
+</div>
+
+<div id="home">
+  <div class="main">
+  <div class="top">
+    <div class="avatar" id="homeAvatar">M</div>
+    <div class="info">
+      <h1 id="homeName">MD Moshiur Rahman</h1>
+      <div class="id-row"><b id="homeUser">TMR82605</b><span class="maxim">MAXIM</span></div>
+      <div class="date-row"><svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> <span id="todayDate">Loading...</span></div>
+      <div class="loc-row"><svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> <span id="homeTerritory">Sahadullapur</span></div>
+    </div>
+    <div class="top-icons">
+      <div class="icon-btn" onclick="openInner('msgPage')"><svg viewBox="0 0 24 24" fill="none" stroke="#D81E2B" stroke-width="2"><path d="M3 5h18v11H8l-5 4V5z"/></svg></div>
+      <div class="icon-btn" onclick="openInner('notiPage')"><svg viewBox="0 0 24 24" fill="none" stroke="#D81E2B" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="badge">5</span></div>
+    </div>
+  </div>
+  <div class="red-card">
+    <div class="red-head"><h2 data-i18n="target">Daily Target vs Achievement</h2><div class="chart-box" onclick="openStock()"><i></i><i></i><i></i></div></div>
+    <div class="red-body">
+      <div class="red-col"><small data-i18n="consumer">Consumer Contact</small><b id="ccText">0/25</b><div class="mini-bar"><div class="mini-fill" id="ccBar"></div></div></div>
+      <div class="red-col"><small>VAO</small><b id="vaoText">0/6</b><div class="mini-bar"><div class="mini-fill" id="vaoBar"></div></div></div>
+    </div>
+  </div>
+  <div class="act-title" data-i18n="activities">Activities</div>
+  <div class="grid">
+    <div class="card" onclick="openInner('contactPage')"><span class="ic"><svg viewBox="0 0 32 32"><circle cx="10" cy="8" r="4" fill="#FFC9A3"/><path d="M4 26c0-4 2.5-6 6-6s6 2 6 6v2H4v-2z" fill="#4A90E2"/><circle cx="23" cy="8" r="4" fill="#FFC9A3"/><path d="M17 26c0-4 2.5-6 6-6s6 2 6 6v2H17v-2z" fill="#FF7A00"/><circle cx="10" cy="7" r="3" fill="#333"/><circle cx="23" cy="7" r="3" fill="#333"/></svg></span><div><b data-i18n="consumer">Consumer Contact</b></div></div>
+    <div class="card" onclick="openStock()"><span class="ic"><svg viewBox="0 0 32 32"><rect x="4" y="18" width="11" height="9" fill="#E8C07A" stroke="#B98A3A"/><rect x="17" y="18" width="11" height="9" fill="#E8C07A" stroke="#B98A3A"/><rect x="10" y="7" width="11" height="9" fill="#F0D29A" stroke="#B98A3A"/><rect x="4" y="18" width="11" height="3" fill="#D9A94E"/><rect x="17" y="18" width="11" height="3" fill="#D9A94E"/></svg></span><div><b data-i18n="stocks">Stocks</b></div></div>
+    <div class="card" onclick="openDaily()"><span class="ic"><svg viewBox="0 0 32 32"><rect x="3" y="5" width="26" height="22" rx="2" fill="#fff" stroke="#999"/><path d="M3 10h26" stroke="#E61E2B" stroke-width="3"/><rect x="7" y="14" width="4" height="3" fill="#E61E2B"/><rect x="14" y="14" width="4" height="3" fill="#2E9E5B"/><rect x="21" y="14" width="4" height="3" fill="#FFB02E"/><rect x="7" y="20" width="4" height="3" fill="#4A90E2"/><rect x="14" y="20" width="4" height="3" fill="#888"/></svg></span><div><b data-i18n="daily">Daily Activities</b></div></div>
+    <div class="card" onclick="openInner('analyticsPage')"><span class="ic"><svg viewBox="0 0 32 32"><rect x="2" y="4" width="28" height="24" rx="2" fill="#fff" stroke="#B0C4DE"/><rect x="2" y="4" width="28" height="6" rx="2" fill="#EAF2FF"/><circle cx="7" cy="7" r="1.5" fill="#E61E2B"/><circle cx="12" cy="7" r="1.5" fill="#FFB02E"/><circle cx="17" cy="7" r="1.5" fill="#2E9E5B"/><circle cx="10" cy="19" r="5" fill="#4A90E2"/><path d="M10 14a5 5 0 0 1 5 5h-5z" fill="#FFB02E"/><path d="M15 19a5 5 0 0 1-5 5l0-5z" fill="#E61E2B"/><rect x="19" y="14" width="3" height="9" fill="#4A90E2"/><rect x="24" y="11" width="3" height="12" fill="#2E9E5B"/></svg></span><div><b data-i18n="analytics">Analytics</b></div></div>
+    <div class="card" onclick="openInner('retainPage')"><span class="ic"><svg viewBox="0 0 32 32"><circle cx="10" cy="8" r="4" fill="#FFC9A3"/><path d="M4 26c0-4 2.5-6 6-6s6 2 6 6v2H4v-2z" fill="#4A90E2"/><circle cx="23" cy="8" r="4" fill="#FFC9A3"/><path d="M17 26c0-4 2.5-6 6-6s6 2 6 6v2H17v-2z" fill="#FF7A00"/><circle cx="10" cy="7" r="3" fill="#333"/><circle cx="23" cy="7" r="3" fill="#333"/></svg></span><div><b data-i18n="retain">Retain Consumer</b></div></div>
+  </div>
+  </div>
+  <div class="bottom">
+    <div class="nav-btn active" onclick="goHome()"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> <span data-i18n="home">Home</span></div>
+    <div class="nav-btn" onclick="openDaily()"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+    <div class="nav-btn" onclick="openInner('profilePage')"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+  </div>
+</div>
+
+<div id="stockPage">
+  <div class="stock-top"><span class="back" onclick="goHome()">←</span><h2 data-i18n="stock_title">Stock</h2><span class="ref" onclick="alert('Refreshing...')">↻</span></div>
+  <div class="stock-body">
+    <div class="stock-cards">
+      <div class="stock-card green"><div class="s-ic">📦↗</div><b id="stockCollected">91</b><span data-i18n="collected">Collected</span></div>
+      <div class="stock-card blue"><div class="s-ic">📦↙</div><b id="stockReturned">0</b><span data-i18n="returned">Returned</span></div>
+    </div>
+    <div class="stock-tabs">
+      <div class="stock-tab on" id="tabStick" onclick="switchStockTab('stick')" data-i18n="stick_count">Stick Count</div>
+      <div class="stock-tab" id="tabVao" onclick="switchStockTab('vao')" data-i18n="vao_items">VAO Items</div>
+    </div>
+    <div id="stickTable">
+      <div class="stock-table">
+        <div class="stock-table-head"><div style="flex:1.6" data-i18n="item_name">Item Name</div><div style="flex:1" data-i18n="allocated">Allocated</div><div style="flex:1" data-i18n="received">Received</div><div style="flex:.6">OHS</div></div>
+        <div class="stock-table-row"><div style="flex:1.6">MAXIM<br>DOUBLE BUR...</div><div style="flex:1">85</div><div style="flex:1">85</div><div style="flex:.6">0</div></div>
+      </div>
+    </div>
+    <div id="vaoTable" style="display:none">
+      <div class="stock-table">
+        <div class="stock-table-head"><div style="flex:1.6" data-i18n="item_name">Item Name</div><div style="flex:1" data-i18n="allocated">Allocated</div><div style="flex:1" data-i18n="received">Received</div><div style="flex:.6">OHS</div></div>
+        <div class="stock-table-row"><div style="flex:1.6">VAO Item<br>—</div><div style="flex:1">0</div><div style="flex:1">0</div><div style="flex:.6">0</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="stock-bottom"><button class="collect" data-i18n="stock_collect" onclick="alert('Stock Collected')">Stock Colle...</button><button class="return" data-i18n="stock_return" onclick="alert('Stock Return')">Stock Return</button></div>
+</div>
+
+<div id="dailyPage">
+  <div class="daily-top"><h2 data-i18n="daily">Daily Activities</h2></div>
+  <div class="daily-body">
+    <!-- Attendance - পাতলা লাইনের মানুষ আইকন -->
+    <div class="daily-item" onclick="toggleDaily(this)">
+      <span class="d-ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3.2"/><path d="M2.5 20c0-3.5 3-5.5 6.5-5.5S15.5 16.5 15.5 20"/><circle cx="17" cy="17" r="3.5"/><path d="M15.2 17l1.2 1.2 2.2-2.2"/></svg></span>
+      <b data-i18n="attendance">Attendance</b><span class="d-btn done">✓</span>
+    </div>
+    <!-- Attire Verification - পাতলা শার্ট -->
+    <div class="daily-item" onclick="toggleDaily(this)">
+      <span class="d-ic"><svg viewBox="0 0 24 24"><path d="M8 3L4 5.5L6.5 8L7.5 6.5V20H16.5V6.5L17.5 8L20 5.5L16 3C15 4.5 13.5 5 12 5C10.5 5 9 4.5 8 3Z"/><path d="M12 5V10"/><path d="M9 9h6"/></svg></span>
+      <b data-i18n="attire">Attire Verification</b><span class="d-btn done">✓</span>
+    </div>
+    <!-- Cluster Acknowledgement - পাতলা দোকান -->
+    <div class="daily-item" onclick="toggleDaily(this)">
+      <span class="d-ic"><svg viewBox="0 0 24 24"><path d="M4 7l1.5-3h13L20 7"/><path d="M4 7h16v2H4z"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/><path d="M9 14h6"/></svg></span>
+      <b data-i18n="cluster_ack">Cluster Acknowledgement</b><span class="d-btn done">✓</span>
+    </div>
+    <!-- Stock Acknowledgement - পাতলা বাক্স -->
+    <div class="daily-item" onclick="toggleDaily(this)">
+      <span class="d-ic"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v10l-8 4-8-4V7l8-4z"/><path d="M12 3v10"/><path d="M12 13l8-6"/><path d="M12 13L4 7"/><circle cx="17" cy="17" r="3.5"/><path d="M15.2 17l1.2 1.2 2.2-2.2"/></svg></span>
+      <b data-i18n="stock_ack">Stock Acknowledgement</b><span class="d-btn done">✓</span>
+    </div>
+    <!-- Lunch Break - পাতলা চামচ-কাঁটা -->
+    <div class="daily-item" onclick="toggleDaily(this)">
+      <span class="d-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/><path d="M3 5v6"/><path d="M3 8h4"/><path d="M3 11h4"/><path d="M21 5v6"/><path d="M21 8c-1.5 0-2 1-2 2.5S19.5 13 21 13"/></svg></span>
+      <b data-i18n="lunch">Lunch Break</b><span class="d-btn next">→</span>
+    </div>
+    <!-- Sync Survey Audio - পাতলা স্পিকার -->
+    <div class="daily-item" onclick="toggleDaily(this)">
+      <span class="d-ic"><svg viewBox="0 0 24 24" style="fill:#111;stroke:none"><path d="M3 10v4h4l6 5V5L7 10H3z" fill="#111"/><path d="M16 9c1.2 1 1.2 5 0 6" stroke="#111" stroke-width="1.6" fill="none"/><path d="M18.5 6.5c2.2 2 2.2 9 0 11" stroke="#111" stroke-width="1.6" fill="none"/></svg></span>
+      <b data-i18n="sync_audio">Sync Survey Audio</b><span class="d-btn done">✓</span>
+    </div>
+    <!-- Check Out - পাতলা মানুষ -->
+    <div class="daily-item" onclick="toggleDaily(this)">
+      <span class="d-ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3.2"/><path d="M2.5 20c0-3.5 3-5.5 6.5-5.5S15.5 16.5 15.5 20"/><circle cx="17" cy="17" r="3.5"/><path d="M15.2 17l1.2 1.2 2.2-2.2"/></svg></span>
+      <b data-i18n="checkout">Check Out</b><span class="d-btn next">→</span>
+    </div>
+  </div>
+  <div class="daily-bottom">
+    <div class="nav-btn" onclick="goHome()"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
+    <div class="nav-btn active" onclick="openDaily()"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> <span data-i18n="daily">Daily Activities</span></div>
+    <div class="nav-btn" onclick="openInner('profilePage')"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+  </div>
+</div>
+
+<div id="profilePage" class="inner-page">
+  <div class="profile-wrap">
+    <div class="profile-title" data-i18n="profile">Profile</div>
+    <div class="profile-avatar" id="profileAvatar">M</div>
+    <div class="profile-name" id="profileName">MD Moshiur Rahman</div>
+    <div class="profile-maxim"><span>MAXIM</span></div>
+    <div class="sec-title" data-i18n="profile_info">Profile Information</div>
+    <div class="info-card">
+      <div class="info-row"><span class="p-ic"><svg viewBox="0 0 24 24" fill="#C81E2B"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span><div><label data-i18n="username">Username</label><b id="profileUser">TMR82605</b></div></div>
+      <div class="info-row"><span class="p-ic"><svg viewBox="0 0 24 24" fill="#C81E2B"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg></span><div><label data-i18n="territory">Territory</label><b id="profileTerritory">Sahadullapur</b></div></div>
+      <div class="info-row"><span class="p-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#C81E2B" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="6" cy="12" r="2"/><circle cx="18" cy="9" r="1.5"/><circle cx="18" cy="15" r="1.5"/><path d="M10 9h4M10 12h4M10 15h4"/></svg></span><div><label data-i18n="phone">Phone Number</label><b id="profilePhone">01614522229</b></div></div>
+    </div>
+    <div class="sec-title" data-i18n="actions">Actions</div>
+    <div class="action-card">
+      <div class="action-row"><span class="a-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#C81E2B" stroke-width="2"><path d="M12 3l7 3v5c0 5-3 8-7 9-4-1-7-4-7-9V6l7-3z"/></svg></span><b data-i18n="ack">Acknowledgement</b><span class="arrow">›</span></div>
+      <div class="action-row"><span class="a-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#C81E2B" stroke-width="2"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg></span><b data-i18n="performance">Performance</b><span class="arrow">›</span></div>
+      <div class="action-row"><span class="a-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#C81E2B" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg></span><b data-i18n="language">Language</b><div class="lang-toggle"><span id="langBn" onclick="setLangAll('bn',event)">বাং</span><span id="langEn" class="on" onclick="setLangAll('en',event)">Eng</span></div></div>
+      <div class="action-row"><span class="a-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#C81E2B" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><b data-i18n="settings">Settings</b><span class="arrow">›</span></div>
+      <div class="action-row"><span class="a-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#C81E2B" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg></span><b data-i18n="sync">Sync Data</b><span class="arrow">›</span></div>
+      <div class="action-row"><span class="a-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#C81E2B" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></span><b data-i18n="support">PDA to Support</b><span class="arrow">›</span></div>
+      <div class="action-row" onclick="openResetFromProfile()"><span class="a-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#C81E2B" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="1" fill="#C81E2B"/></svg></span><b data-i18n="reset">Reset Password</b><span class="arrow">›</span></div>
+      <div class="action-row" onclick="openLogout()"><span class="a-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#C81E2B" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span><b class="logout" data-i18n="logout">Logout</b><span class="arrow">›</span></div>
+    </div>
+    <div class="footer"><b>Aron Moments</b><br><span class="green">v1.0.17 - Theseus AI Lab</span><br><span class="gold">armeabi-v7a</span><div class="dev"><span data-i18n="device">Device ID</span> - <b>8c9404752500833f</b></div></div>
+  </div>
+  <div style="position:fixed;left:12px;right:12px;bottom:12px;max-width:336px;margin:0 auto;background:linear-gradient(180deg,#E61E2B,#C81E2B);border-radius:20px;padding:6px;display:flex;align-items:center;box-shadow:0 8px 18px rgba(200,30,43,.3);border:1.2px solid #FF6B6B">
+    <div class="nav-btn" onclick="goHome()"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
+    <div class="nav-btn" onclick="openDaily()"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+    <div class="nav-btn active" onclick="openInner('profilePage')"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> <span data-i18n="profile">Profile</span></div>
+  </div>
+</div>
+
+<div id="contactPage" class="inner-page" style="padding:16px 14px"><div style="font-size:18px;cursor:pointer;margin-bottom:10px" onclick="goHome()">← <span data-i18n="back">Back</span></div><h2 data-i18n="consumer">Consumer Contact</h2><div id="contactList"></div><button class="add-btn" onclick="openAdd()">+</button></div>
+<div id="analyticsPage" class="inner-page" style="padding:16px 14px"><div style="font-size:18px;cursor:pointer;margin-bottom:10px" onclick="goHome()">← <span data-i18n="back">Back</span></div><h2>📊 <span data-i18n="analytics">Analytics</span></h2><div class="list-item"><b>This Week</b><span>175/175</span></div><div class="list-item"><b>This Month</b><span>520/600</span></div></div>
+<div id="retainPage" class="inner-page" style="padding:16px 14px"><div style="font-size:18px;cursor:pointer;margin-bottom:10px" onclick="goHome()">← <span data-i18n="back">Back</span></div><h2 data-i18n="retain">Retain Consumer</h2><div class="list-item"><b>Rahim - Sahadullapur</b><span>Call 📞</span></div></div>
+<div id="msgPage" class="inner-page" style="padding:16px 14px"><div style="font-size:18px;cursor:pointer;margin-bottom:10px" onclick="goHome()">← <span data-i18n="back">Back</span></div><h2>💬 <span data-i18n="messages">Messages</span></h2><div class="list-item"><b>Manager: Good job!</b><span>2m</span></div></div>
+<div id="notiPage" class="inner-page" style="padding:16px 14px"><div style="font-size:18px;cursor:pointer;margin-bottom:10px" onclick="goHome()">← <span data-i18n="back">Back</span></div><h2>🔔 <span data-i18n="notifications">Notifications</span> (5)</h2><div class="list-item"><b>Target Completed! 🎉</b><span>Now</span></div></div>
+
+<div class="modal" id="addModal"><div class="modal-box"><h3 data-i18n="new_contact">New Consumer Contact</h3><input id="cName" placeholder="নাম"><input id="cPlace" placeholder="জায়গা"><select id="cType"><option>Consumer Contact</option><option>VAO</option></select><button onclick="saveContact()" data-i18n="save">Save</button><button onclick="closeAdd()" style="background:#eee;color:#333" data-i18n="cancel">Cancel</button></div></div>
+
+<div id="logoutModal" onclick="if(event.target.id=='logoutModal') closeLogout()">
+  <div class="logout-box">
+    <h2 data-i18n="logout">Logout</h2>
+    <p data-i18n="logout_text">Are you sure you want to log out of this device?</p>
+    <div class="logout-btns"><button class="cancel" onclick="closeLogout()" data-i18n="cancel">Cancel</button><button class="yes" onclick="confirmLogout()" data-i18n="logout">Logout</button></div>
+  </div>
+</div>
+
+<script>
+var USERS = {
+  "TMR85127": { name:"MD Wajkuruni", username:"TMR85127", territory:"Sahadullapur", phone:"01*********", realPhone:"01765229781", pass:"123456" },
+  "TMR82506": { name:"MD Moshiur Rahman", username:"TMR82506", territory:"Sahadullapur", phone:"01614522229", realPhone:"01614522229", pass:"123456" },
+  "TMR82605": { name:"MD Moshiur Rahman", username:"TMR82605", territory:"Sahadullapur", phone:"01614522229", realPhone:"01614522229", pass:"123456" },
+  "TMR24222": { name:"Md.Sayed Atikur Rahman", username:"TMR24222", territory:"Sahadullapur", phone:"01751058244", realPhone:"01751058244", pass:"123456" }
+};
+try{ var savedPass=JSON.parse(localStorage.getItem('aron_new_pass')||'{}'); for(var k in savedPass){ if(USERS[k]) USERS[k].pass=savedPass[k]; } }catch(e){}
+var LANG = {
+  en: { signin_title:"Sign in to your<br>account", username:"Username", username_ph:"Enter your Username", password:"Password", password_ph:"Enter your password", remember:"Remember Me", forgot:"Forgot Password?", signin:"Sign In", login_err:"❌ Wrong Username / Password!", device:"Device ID", target:"Daily Target vs Achievement", consumer:"Consumer Contact", activities:"Activities", stocks:"Stocks", daily:"Daily Activities", analytics:"Analytics", retain:"Retain Consumer", home:"Home", profile:"Profile", profile_info:"Profile Information", territory:"Territory", phone:"Phone Number", phone_ph:"Enter your Phone Number", actions:"Actions", ack:"Acknowledgement", performance:"Performance", language:"Language", settings:"Settings", sync:"Sync Data", support:"PDA to Support", reset:"Reset Password", logout:"Logout", logout_text:"Are you sure you want to log out of this device?", cancel:"Cancel", back:"Back", messages:"Messages", notifications:"Notifications", new_contact:"New Consumer Contact", save:"Save", reset_title:"Reset Your Password", reset_sub:"We will send a password reset link to your phone number", send_code:"Send Reset Code", verify:"Verify Phone Number", new_pass:"New Password", new_pass_ph:"Enter new password", confirm_pass:"Confirm Password", confirm_pass_ph:"Confirm new password", save_pass:"Save New Password", back_login:"← Back to Login", stock_title:"Stock", collected:"Collected", returned:"Returned", stick_count:"Stick Count", vao_items:"VAO Items", item_name:"Item Name", allocated:"Allocated", received:"Received", stock_collect:"Stock Colle...", stock_return:"Stock Return", attendance:"Attendance", attire:"Attire Verification", cluster_ack:"Cluster Acknowledgement", stock_ack:"Stock Acknowledgement", lunch:"Lunch Break", sync_audio:"Sync Survey Audio", checkout:"Check Out" },
+  bn: { signin_title:"আপনার অ্যাকাউন্টে<br>সাইন ইন করুন", username:"ব্যবহারকারীর নাম", username_ph:"আপনার ব্যবহারকারীর নাম দিন", password:"পাসওয়ার্ড", password_ph:"আপনার পাসওয়ার্ড দিন", remember:"মনে রাখুন", forgot:"পাসওয়ার্ড ভুলে গেছেন?", signin:"সাইন ইন", login_err:"❌ ভুল ব্যবহারকারীর নাম / পাসওয়ার্ড!", device:"ডিভাইস আইডি", target:"দৈনিক টার্গেট বনাম অর্জন", consumer:"কনজিউমার কন্ট্যাক্ট", activities:"কার্যক্রম", stocks:"স্টক", daily:"দৈনিক কার্যক্রম", analytics:"অ্যানালিটিক্স", retain:"কনজিউমার ধরে রাখুন", home:"হোম", profile:"প্রোফাইল", profile_info:"প্রোফাইল তথ্য", territory:"টেরিটরি", phone:"ফোন নম্বর", phone_ph:"আপনার ফোন নম্বর দিন", actions:"অ্যাকশন", ack:"স্বীকৃতি", performance:"পারফরম্যান্স", language:"ভাষা", settings:"সেটিংস", sync:"ডাটা সিঙ্ক", support:"পিডিএ টু সাপোর্ট", reset:"পাসওয়ার্ড রিসেট", logout:"লগআউট", logout_text:"আপনি কি এই ডিভাইস থেকে লগ আউট করতে চান?", cancel:"বাতিল", back:"পেছনে", messages:"মেসেজ", notifications:"নোটিফিকেশন", new_contact:"নতুন কনজিউমার কন্ট্যাক্ট", save:"সেভ করুন", reset_title:"আপনার পাসওয়ার্ড রিসেট করুন", reset_sub:"আমরা আপনার ফোন নম্বরে পাসওয়ার্ড রিসেট লিংক পাঠাবো", send_code:"রিসেট কোড পাঠান", verify:"ফোন নম্বর যাচাই করুন", new_pass:"নতুন পাসওয়ার্ড", new_pass_ph:"নতুন পাসওয়ার্ড দিন", confirm_pass:"পাসওয়ার্ড নিশ্চিত করুন", confirm_pass_ph:"নতুন পাসওয়ার্ড আবার দিন", save_pass:"নতুন পাসওয়ার্ড সেভ করুন", back_login:"← লগইনে ফিরে যান", stock_title:"স্টক", collected:"সংগ্রহ", returned:"ফেরত", stick_count:"স্টিক কাউন্ট", vao_items:"ভিএও আইটেম", item_name:"আইটেমের নাম", allocated:"বরাদ্দ", received:"প্রাপ্ত", stock_collect:"স্টক সংগ্রহ", stock_return:"স্টক ফেরত", attendance:"উপস্থিতি", attire:"পোশাক যাচাই", cluster_ack:"ক্লাস্টার স্বীকৃতি", stock_ack:"স্টক স্বীকৃতি", lunch:"দুপুরের বিরতি", sync_audio:"সার্ভে অডিও সিঙ্ক", checkout:"চেক আউট" }
+};
+var currentLang = localStorage.getItem('aron_lang') || 'en';
+function applyLang(){
+  var d = LANG[currentLang];
+  document.querySelectorAll('[data-i18n]').forEach(function(el){ var k=el.getAttribute('data-i18n'); if(d[k]) el.innerHTML=d[k]; });
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el){ var k=el.getAttribute('data-i18n-ph'); if(d[k]) el.placeholder=d[k]; });
+  document.getElementById('lBn').classList.toggle('on', currentLang=='bn');
+  document.getElementById('lEn').classList.toggle('on', currentLang=='en');
+  var b=document.getElementById('langBn'); var e=document.getElementById('langEn');
+  if(b&&e){ b.classList.toggle('on', currentLang=='bn'); e.classList.toggle('on', currentLang=='en'); }
+  updateDate();
+}
+function setLangAll(l, e){ if(e) e.stopPropagation(); currentLang=l; localStorage.setItem('aron_lang', l); applyLang(); }
+function setLoginLang(l){ setLangAll(l); }
+function setLang(l,e){ setLangAll(l,e); }
+var currentUser = null;
+var rememberMe = true;
+var resetUserKey = null;
+function getOrdinal(n){ if(n>3 && n<21) return 'th'; switch(n%10){ case 1: return 'st'; case 2: return 'nd'; case 3: return 'rd'; default: return 'th'; } }
+function getTodayKey(){ var n=new Date(); return n.getFullYear()+'-'+(n.getMonth()+1)+'-'+n.getDate(); }
+function updateDate(){
+  var now=new Date(); var day=now.getDate();
+  if(currentLang=='bn'){
+    var bnNums=['০','১','২','৩','৪','৫','৬','৭','৮','৯']; var bnMonths=["জানুয়ারি","ফেব্রুয়ারি","মার্চ","এপ্রিল","মে","জুন","জুলাই","আগস্ট","সেপ্টেম্বর","অক্টোবর","নভেম্বর","ডিসেম্বর"];
+    var bnDay=String(day).split('').map(function(c){ return bnNums[+c]; }).join('');
+    var bnYear=String(now.getFullYear()).split('').map(function(c){ return bnNums[+c]; }).join('');
+    document.getElementById('todayDate').innerText = bnDay + " " + bnMonths[now.getMonth()] + ", " + bnYear;
+  } else {
+    var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+    document.getElementById('todayDate').innerText=day+getOrdinal(day)+" "+months[now.getMonth()]+", "+now.getFullYear();
+  }
+}
+updateDate(); setInterval(updateDate,60000);
+function applyUser(u){
+  currentUser = u;
+  document.getElementById('homeName').innerText = u.name;
+  document.getElementById('homeUser').innerText = u.username;
+  document.getElementById('homeTerritory').innerText = u.territory;
+  document.getElementById('homeAvatar').innerText = u.name.replace('MD ','').replace('Md.','').trim().charAt(0);
+  document.getElementById('profileName').innerText = u.name;
+  document.getElementById('profileUser').innerText = u.username;
+  document.getElementById('profileTerritory').innerText = u.territory;
+  document.getElementById('profilePhone').innerText = u.phone;
+  document.getElementById('profileAvatar').innerText = u.name.replace('MD ','').replace('Md.','').trim().charAt(0);
+}
+function togglePass(){ var p=document.getElementById('loginPass'); p.type = p.type=='password' ? 'text' : 'password'; }
+function toggleNewPass(id){ var p=document.getElementById(id); p.type = p.type=='password' ? 'text' : 'password'; }
+function toggleRemember(){ rememberMe=!rememberMe; document.getElementById('rememberBox').innerText = rememberMe ? '✓' : ''; document.getElementById('rememberBox').style.background = rememberMe ? '#8A4A3A' : '#fff'; document.getElementById('rememberBox').style.border = rememberMe ? 'none' : '1.5px solid #999'; }
+function openReset(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('home').style.display='none';
+  document.getElementById('stockPage').style.display='none';
+  document.getElementById('dailyPage').style.display='none';
+  document.querySelectorAll('.inner-page').forEach(function(p){ p.style.display='none'; });
+  document.getElementById('resetPage').style.display='flex';
+  document.getElementById('step1').style.display='block';
+  document.getElementById('step2').style.display='none';
+  document.getElementById('step3').style.display='none';
+  document.getElementById('resetUser').value = document.getElementById('loginUser').value || '';
+  resetUserKey=null;
+}
+function openResetFromProfile(){ openReset(); if(currentUser) document.getElementById('resetUser').value = currentUser.username; }
+function backToLogin(){ document.getElementById('resetPage').style.display='none'; document.getElementById('loginPage').style.display='flex'; }
+function sendResetCode(){
+  var u = document.getElementById('resetUser').value.trim().toUpperCase();
+  var err=document.getElementById('resetErr1'); err.style.display='none';
+  if(!u || !USERS[u]){ err.innerText = currentLang=='bn' ? '❌ এই TMR ID পাওয়া যায়নি!' : '❌ This TMR ID not found!'; err.style.display='block'; return; }
+  resetUserKey=u;
+  document.getElementById('step1').style.display='none';
+  document.getElementById('step2').style.display='block';
+  var ph=USERS[u].realPhone;
+  document.getElementById('resetPhoneHint').innerText = currentLang=='bn' ? 'এই নম্বরে কোড যাবে: '+ph.substring(0,2)+'*********' : 'Code will go to: '+ph.substring(0,2)+'*********';
+  document.getElementById('resetPhone').value='';
+}
+function verifyPhone(){
+  var ph = document.getElementById('resetPhone').value.trim().replace(/\s|-/g,'');
+  if(ph.startsWith('+88')) ph=ph.substring(3);
+  var err=document.getElementById('resetErr2'); err.style.display='none';
+  if(!resetUserKey){ err.innerText='❌ Try again'; err.style.display='block'; return; }
+  if(ph !== USERS[resetUserKey].realPhone){
+    err.innerText = currentLang=='bn' ? '❌ ফোন নম্বর মিলছে না! সঠিক নম্বর দিন।' : '❌ Phone number does not match! Enter correct number.';
+    err.style.display='block'; return;
+  }
+  document.getElementById('step2').style.display='none';
+  document.getElementById('step3').style.display='block';
+}
+function saveNewPass(){
+  var n=document.getElementById('newPass').value.trim();
+  var c=document.getElementById('confirmPass').value.trim();
+  var err=document.getElementById('resetErr3'); var ok=document.getElementById('resetOk'); err.style.display='none'; ok.style.display='none';
+  if(n.length<4){ err.innerText = currentLang=='bn' ? '❌ পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে!' : '❌ Password must be at least 4 characters!'; err.style.display='block'; return; }
+  if(n!==c){ err.innerText = currentLang=='bn' ? '❌ দুইটা পাসওয়ার্ড মিলছে না!' : '❌ Passwords do not match!'; err.style.display='block'; return; }
+  USERS[resetUserKey].pass=n;
+  var saved={}; try{ saved=JSON.parse(localStorage.getItem('aron_new_pass')||'{}'); }catch(e){}
+  saved[resetUserKey]=n; localStorage.setItem('aron_new_pass', JSON.stringify(saved));
+  ok.innerText = currentLang=='bn' ? '✅ নতুন পাসওয়ার্ড সেভ হয়েছে! এখন নতুন পাসওয়ার্ড দিয়ে লগইন করুন।' : '✅ New password saved! Now login with your new password.';
+  ok.style.display='block';
+  document.getElementById('loginUser').value=resetUserKey; document.getElementById('loginPass').value='';
+  setTimeout(function(){ backToLogin(); },1500);
+}
+function doLogin(){
+  var u = document.getElementById('loginUser').value.trim().toUpperCase();
+  var p = document.getElementById('loginPass').value.trim();
+  var user = USERS[u];
+  if(!user || user.pass !== p){ document.getElementById('loginErr').style.display='block'; return; }
+  document.getElementById('loginErr').style.display='none';
+  applyUser(user);
+  localStorage.setItem('aron_login_date', getTodayKey());
+  localStorage.setItem('aron_login_user', u);
+  localStorage.setItem('aron_date', getTodayKey());
+  localStorage.setItem('aron_contacts', JSON.stringify([]));
+  contacts = [];
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('resetPage').style.display='none';
+  document.getElementById('home').style.display='flex';
+  renderContacts(); updateTarget();
+}
+function openLogout(){ document.getElementById('logoutModal').style.display='flex'; }
+function closeLogout(){ document.getElementById('logoutModal').style.display='none'; }
+function confirmLogout(){
+  document.getElementById('logoutModal').style.display='none';
+  localStorage.removeItem('aron_login_date'); localStorage.removeItem('aron_login_user');
+  document.querySelectorAll('.inner-page').forEach(function(p){ p.style.display='none'; });
+  document.getElementById('home').style.display='none';
+  document.getElementById('stockPage').style.display='none';
+  document.getElementById('dailyPage').style.display='none';
+  document.getElementById('resetPage').style.display='none';
+  document.getElementById('loginPage').style.display='flex';
+}
+function doLogout(){ openLogout(); }
+function openStock(){
+  document.getElementById('home').style.display='none';
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('resetPage').style.display='none';
+  document.getElementById('dailyPage').style.display='none';
+  document.querySelectorAll('.inner-page').forEach(function(p){ p.style.display='none'; });
+  document.getElementById('stockPage').style.display='flex';
+}
+function switchStockTab(t){
+  document.getElementById('tabStick').classList.toggle('on', t=='stick');
+  document.getElementById('tabVao').classList.toggle('on', t=='vao');
+  document.getElementById('stickTable').style.display = t=='stick' ? 'block' : 'none';
+  document.getElementById('vaoTable').style.display = t=='vao' ? 'block' : 'none';
+}
+function openDaily(){
+  document.getElementById('home').style.display='none';
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('resetPage').style.display='none';
+  document.getElementById('stockPage').style.display='none';
+  document.querySelectorAll('.inner-page').forEach(function(p){ p.style.display='none'; });
+  document.getElementById('dailyPage').style.display='flex';
+}
+function toggleDaily(el){
+  var btn=el.querySelector('.d-btn');
+  if(btn.classList.contains('done')){ btn.classList.remove('done'); btn.classList.add('next'); btn.innerText='→'; }
+  else { btn.classList.remove('next'); btn.classList.add('done'); btn.innerText='✓'; }
+}
+var todayKey=getTodayKey(); var savedDate=localStorage.getItem('aron_date'); var contacts;
+if(savedDate!==todayKey){ contacts=[]; localStorage.setItem('aron_contacts',JSON.stringify(contacts)); localStorage.setItem('aron_date',todayKey); } else { contacts=JSON.parse(localStorage.getItem('aron_contacts')||'[]'); }
+var progress=0; var msgs=["Syncing assigned retailers...","Loading daily target...","Checking stocks...","Preparing your workspace...","Almost done..."];
+setTimeout(function(){ document.getElementById('loader1').style.display='none'; document.getElementById('loader2').style.display='flex'; startLoading(); },1600);
+function startLoading(){
+  if(!navigator.onLine){ document.getElementById('noNet').style.display='block'; return; }
+  document.getElementById('noNet').style.display='none'; progress=0;
+  var timer=setInterval(function(){
+    if(!navigator.onLine){ clearInterval(timer); document.getElementById('noNet').style.display='block'; return; }
+    progress+=Math.floor(Math.random()*8)+3; if(progress>=100) progress=100;
+    document.getElementById('barFill').style.width=progress+'%'; document.getElementById('percent').innerText=progress+'%';
+    document.getElementById('syncText').innerText=msgs[Math.min(Math.floor(progress/20),4)];
+    if(progress>=100){ clearInterval(timer); setTimeout(function(){
+      document.getElementById('loader2').style.display='none';
+      var loginDate = localStorage.getItem('aron_login_date');
+      var loginUser = localStorage.getItem('aron_login_user');
+      if(loginDate === getTodayKey() && loginUser && USERS[loginUser]){ applyUser(USERS[loginUser]); document.getElementById('home').style.display='flex'; }
+      else { localStorage.removeItem('aron_login_date'); document.getElementById('loginPage').style.display='flex'; var savedU = localStorage.getItem('aron_login_user'); if(savedU) document.getElementById('loginUser').value = savedU; }
+      renderContacts(); updateTarget(); applyLang();
+    },400); }
+  },180);
+}
+function retryLoad(){ startLoading(); }
+function openInner(id){ document.getElementById('home').style.display='none'; document.getElementById('loginPage').style.display='none'; document.getElementById('resetPage').style.display='none'; document.getElementById('stockPage').style.display='none'; document.getElementById('dailyPage').style.display='none'; document.querySelectorAll('.inner-page').forEach(function(p){ p.style.display='none'; }); document.getElementById(id).style.display='block'; window.scrollTo(0,0); }
+function goHome(){ document.querySelectorAll('.inner-page').forEach(function(p){ p.style.display='none'; }); document.getElementById('loginPage').style.display='none'; document.getElementById('resetPage').style.display='none'; document.getElementById('stockPage').style.display='none'; document.getElementById('dailyPage').style.display='none'; document.getElementById('home').style.display='flex'; }
+function renderContacts(){ var html=''; contacts.slice().reverse().forEach(function(c){ html+='<div class="list-item"><div><b>'+c.name+'</b><br><small style="color:#888">'+c.place+' • '+c.type+'</small></div><span>✅</span></div>'; }); document.getElementById('contactList').innerHTML=html; }
+function updateTarget(){ var cc=contacts.filter(function(c){ return c.type=='Consumer Contact'; }).length; var vao=contacts.filter(function(c){ return c.type=='VAO'; }).length; document.getElementById('ccText').innerText=cc+'/25'; document.getElementById('vaoText').innerText=vao+'/6'; document.getElementById('ccBar').style.width=(cc/25*100)+'%'; document.getElementById('vaoBar').style.width=(vao/6*100)+'%'; }
+function openAdd(){ document.getElementById('addModal').style.display='flex'; }
+function closeAdd(){ document.getElementById('addModal').style.display='none'; }
+function saveContact(){ var n=document.getElementById('cName').value.trim(); var p=document.getElementById('cPlace').value.trim()||'Sahadullapur'; var t=document.getElementById('cType').value; if(!n){ alert('নাম দাও'); return; } contacts.push({name:n, place:p, type:t}); localStorage.setItem('aron_contacts', JSON.stringify(contacts)); localStorage.setItem('aron_date', getTodayKey()); closeAdd(); renderContacts(); updateTarget(); alert('✅ Saved!'); }
+applyLang();
+</script>
+</body>
+</html>
